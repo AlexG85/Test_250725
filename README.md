@@ -54,11 +54,11 @@ Run unit tests with: dotnet test
 
 ## API Endpoints
 
-- `POST /Auth/Login` — Authenticate user and receive JWT.
-- `POST /Auth/Signin` — Register a new user.
-- `POST /Auth/Refresh` — Refresh JWT token.
-- `GET /Auth/GetAuthenticated` — Get current authenticated user info.
-- `GET /ReportUser/sessionlogins?userId={id}&size={n}` — Get recent login sessions for a user.
+- `POST /Auth/Login` â€” Authenticate user and receive JWT.
+- `POST /Auth/Signin` â€” Register a new user.
+- `POST /Auth/Refresh` â€” Refresh JWT token.
+- `GET /Auth/GetAuthenticated` â€” Get current authenticated user info.
+- `GET /ReportUser/sessionlogins?userId={id}&size={n}` â€” Get recent login sessions for a user.
 
 ## Technologies Used
 
@@ -70,6 +70,6 @@ Run unit tests with: dotnet test
 
 ## License
 
-This project is for test skill and demonstration purposes for a new job application.
+This project is for testing skills and demonstration purposes for a new job application.
 
 
