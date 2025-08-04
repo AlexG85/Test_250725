@@ -57,7 +57,7 @@ namespace Testing.Controllers
         public async Task SignIn_ReturnsOk_WhenUserCreated()
         {
             var signInRequest = new SignInRequest { FirstName = "A", LastName = "B", EMail = "a@b.com", Password = "pass" };
-            _userServiceMock.Setup(s => s.AddAndUpdateUserAsync(signInRequest)).ReturnsAsync(true);
+            _userServiceMock.Setup(s => s.AddUserAsync(signInRequest)).ReturnsAsync(true);
 
             var result = await _controller.SignIn(signInRequest);
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -68,7 +68,7 @@ namespace Testing.Controllers
         public async Task SignIn_ReturnsOk_WhenExceptionThrown()
         {
             var signInRequest = new SignInRequest { FirstName = "A", LastName = "B", EMail = "a@b.com", Password = "pass" };
-            _userServiceMock.Setup(s => s.AddAndUpdateUserAsync(signInRequest)).ThrowsAsync(new System.Exception("fail"));
+            _userServiceMock.Setup(s => s.AddUserAsync(signInRequest)).ThrowsAsync(new System.Exception("fail"));
 
             var result = await _controller.SignIn(signInRequest);
             var okResult = Assert.IsType<OkObjectResult>(result);

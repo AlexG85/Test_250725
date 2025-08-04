@@ -13,6 +13,9 @@ namespace Test_Examen.Configuration.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Required]
+        public int RoleId { get; set; }
+
         [Required, StringLength(256)]
         public string UserName { get; set; } = string.Empty;
 
@@ -56,6 +59,8 @@ namespace Test_Examen.Configuration.Entities
 
         [Required]
         public int AccessFailedCount { get; set; } = 0;
+
+        public virtual AppRole Role { get; set; } = null!;
 
         public virtual ICollection<AppUserLogin> Logins { get; set; } = null!;
         public virtual ICollection<RefreshToken> Tokens { get; set; } = null!;

@@ -42,7 +42,7 @@ namespace Test_Examen.Controllers.Authentication
         {
             try
             {
-                await _userService.AddAndUpdateUserAsync(data);
+                await _userService.AddUserAsync(data);
 
                 return Ok(new ResponseDTO<string>("User created correctly"));
             }

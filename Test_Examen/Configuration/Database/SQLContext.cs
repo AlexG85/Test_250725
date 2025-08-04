@@ -29,10 +29,14 @@ namespace Test_Examen.Configuration.Database
         }
 
         #region "DBSets"
-
+        public DbSet<AppRole> Roles { get; set; }
         public DbSet<AppUser> Users { get; set; }
         public DbSet<AppUserLogin> UserLogins { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        public DbSet<Module> Modules { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
 
         #endregion
 
@@ -71,6 +75,49 @@ namespace Test_Examen.Configuration.Database
                 b.ToTable("app_tRefreshTokens");
             });
 
+            builder.Entity<AppRole>(b =>
+            {
+                b.HasKey(r => r.RoleId).HasName("PKRole_RoleId");
+
+                b.HasData(new AppRole() { RoleId = 1, Description = "DefaultRole", IsActive = true });
+
+                // Each Role can have many entries in the UserRole join table
+                b.HasMany(e => e.RoleUsers).WithOne(e => e.Role).HasForeignKey(ur => ur.RoleId).IsRequired();
+                b.HasMany(e => e.RolePermissions).WithOne(e => e.Role).HasForeignKey(rp => rp.RoleId).IsRequired();
+
+                b.ToTable("tRoles");
+            });
+
+            builder.Entity<Module>(b =>
+            {
+                b.HasKey(m => m.ModuleId).HasName("PKModule_ModuleId");
+
+                b.HasMany(e => e.Permissions).WithOne(e => e.Module).HasForeignKey(mp => mp.ModuleType).IsRequired();
+                b.HasData(new Module() { ModuleId = ModuleType.General, Name = "General", Description = "General Module" });
+
+                b.ToTable("tModules");
+
+            });
+
+            builder.Entity<Permission>(b =>
+            {
+                b.HasKey(p => p.PermissionId).HasName("PKPermission_PermissionId");
+
+                b.HasIndex(e => new { e.ModuleType, e.PermissionType }).HasDatabaseName("IX_Permission_ModulePermission").IsUnique();
+                b.HasMany(e => e.RolePermissions).WithOne(e => e.Permission).HasForeignKey(rp => rp.PermissionId).IsRequired();
+
+                b.ToTable("tPermissions");
+            });
+
+            builder.Entity<RolePermission>(b =>
+            {
+                b.HasKey(rp => new { rp.RoleId, rp.PermissionId }).HasName("PKRolePermission_RolePermission");
+
+                b.HasOne(rp => rp.Permission).WithMany(p => p.RolePermissions).HasForeignKey(rp => rp.PermissionId).IsRequired();
+                b.HasOne(rp => rp.Role).WithMany(r => r.RolePermissions).HasForeignKey(rp => rp.RoleId).IsRequired();
+
+                b.ToTable("rRolePermissions");
+            });
 
         }
     }

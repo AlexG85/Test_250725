@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Azure.Core;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using Test_Examen.Configuration.Entities;
 using Test_Examen.Configuration.Helpers;
 using Test_Examen.Configuration.Interfaces;
 using Test_Examen.Configuration.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Test_Examen.Services.Users
 {
@@ -132,10 +134,23 @@ namespace Test_Examen.Services.Users
         /// </summary>
         /// <param name="status">True if only active users</param>
         /// <returns>List for all required users</returns>
-        public async Task<List<AppUser>> GetAllAsync(bool status = true)
+        public async Task<List<UserDTO>> GetAllAsync(bool status = true)
         {
             var data = await db.Users.Where(x => x.IsActive == status || !status)
                 .AsNoTracking()
+                .Select(x => new UserDTO
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    UserName = x.UserName,
+                    Email = x.Email,
+                    IsActive = x.IsActive,
+                    CreatedAt = x.CreatedAt,
+                    CreatedBy = x.CreatedBy,
+                    ModifiedAt = x.ModifiedAt,
+                    ModifiedBy = x.ModifiedBy
+                })
                 .ToListAsync();
 
             return data;
@@ -163,23 +178,83 @@ namespace Test_Examen.Services.Users
         /// <param name="request">request with the new data</param>
         /// <returns>Text if the user was created correctly</returns>
         /// <exception cref="Exception">User already exists or DB error</exception>
-        public async Task<bool> AddAndUpdateUserAsync(SignInRequest request)
+        public async Task<bool> AddUserAsync(SignInRequest request)
         {
             var obj = await db.Users.SingleOrDefaultAsync(c => c.UserName == request.EMail);
             if (obj != null)
                 throw new Exception("User already exists with this email address.");
 
-            await db.Users.AddAsync(new AppUser() {
+            var _roleId = (await db.Roles.FirstAsync(r => r.Description == "DefaultRole")).RoleId;
+
+            await db.Users.AddAsync(new AppUser()
+            {
                 UserName = request.EMail,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 PasswordHash = request.Password,
                 Email = request.EMail,
                 IsActive = true,
+                RoleId = _roleId,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "System"
             });
 
             if (await db.SaveChangesAsync() == 0)
                 throw new Exception("Failed to create user. Please try again later.");
+
+            return true;
+        }
+
+        public async Task<bool> UpdateUserAsync(UserRequest user, string identity)
+        {
+            bool hasUser = await db.Users.AnyAsync(c => c.UserName == user.UserName);
+            if (!hasUser)
+                throw new Exception("User does not exists.");
+
+            await using var transaction = await db.Database.BeginTransactionAsync();
+
+            try
+            {
+                await db.Users.Where(x => x.UserName == user.UserName)
+                    .ExecuteUpdateAsync(u => 
+                        u.SetProperty(x => x.FirstName, user.FirstName)
+                         .SetProperty(x => x.LastName, user.LastName)
+                         .SetProperty(x => x.Email, user.Email)
+                         .SetProperty(x => x.ModifiedBy, identity)
+                         .SetProperty(x => x.ModifiedAt, DateTime.UtcNow)
+                    );
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            bool hasUser = await db.Users.AnyAsync(c => c.Id == userId);
+            if (!hasUser)
+                throw new Exception("User does not exists.");
+
+            await using var transaction = await db.Database.BeginTransactionAsync();
+
+            try
+            {
+                await db.Users.Where(x => x.Id == userId)
+                    .ExecuteDeleteAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
 
             return true;
         }
@@ -356,6 +431,7 @@ namespace Test_Examen.Services.Users
 
             return refreshToken.Token;
         }
+
 
         #endregion
 

@@ -8,14 +8,33 @@ namespace Test_Examen.Configuration.Interfaces
     {
         Task<AuthenticateResponse?> AuthenticateAsync(AuthenticationRequest model);
 
-        Task<List<AppUser>> GetAllAsync(bool status = true);
+        Task<List<UserDTO>> GetAllAsync(bool status = true);
 
         Task<AppUser> GetByIdAsync(int id);
 
-        Task<bool> AddAndUpdateUserAsync(SignInRequest request);
+        Task<bool> AddUserAsync(SignInRequest request);
+
+        Task<bool> UpdateUserAsync(UserRequest user, string identity);
+
+        Task<bool> DeleteUserAsync(int userId);
 
         Task<AuthenticateResponse?> RefreshAuthenticationAsync(string token, string refreshToken);
 
         Task<List<UserLoginDTO>> GetLoginsByUserIdAsync(int id, int size = 50);
+    }
+
+    public interface IRoleService
+    {
+        Task<List<RoleDTO>> GetAllAsync(bool status = true);
+
+        Task<AppRole> GetByIdAsync(int id);
+
+        Task<bool> AddRoleAsync(string description);
+
+        Task<bool> UpdateRoleAsync(RoleUpdateRequest role);
+
+        Task<bool> UpdateUserRoleAsync(int userId, int roleId);
+
+        Task<bool> DeleteRole(int roleId);
     }
 }
