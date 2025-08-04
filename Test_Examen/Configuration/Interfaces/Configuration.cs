@@ -37,4 +37,17 @@ namespace Test_Examen.Configuration.Interfaces
 
         Task<bool> DeleteRole(int roleId);
     }
+
+    public interface IEmployeeService
+    {
+        Task<List<EmployeeDTO>> GetAllAsync(bool status = true);
+
+        Task<Employee> GetByIdAsync(int id);
+
+        Task<bool> AddEmployeeAsync(EmployeeDTO employee);
+
+        Task<bool> UpdateEmployeeAsync(EmployeeDTO employee);
+
+        Task<bool> DeleteEmployee(int employeeId);
+    }
 }

@@ -13,6 +13,7 @@ using Test_Examen.Configuration.Interfaces;
 using Test_Examen.Configuration.Middleware;
 using Test_Examen.Configuration.Models;
 using Test_Examen.Configuration.Services;
+using Test_Examen.Services.Employees;
 using Test_Examen.Services.Roles;
 using Test_Examen.Services.Users;
 
@@ -63,6 +64,7 @@ builder.Services.AddHostedService<InvalidTokenService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 builder.Services.AddSingleton<JwtSecurityTokenHelper>();
 

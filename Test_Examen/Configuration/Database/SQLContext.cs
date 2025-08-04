@@ -38,6 +38,8 @@ namespace Test_Examen.Configuration.Database
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
 
+        public DbSet<Employee> Employees { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -119,6 +121,15 @@ namespace Test_Examen.Configuration.Database
                 b.ToTable("rRolePermissions");
             });
 
+            builder.Entity<Employee>(b =>
+            {
+                b.HasKey(e => e.Id).HasName("PKEmployee_EmployeeId");
+
+                b.HasIndex(e => e.LastName).HasDatabaseName("IX_Employees_LastName");
+                b.HasIndex(e => e.FirstName).HasDatabaseName("IX_Employees_FirstName");
+
+                b.ToTable("tEmployees");
+            });
         }
     }
 }

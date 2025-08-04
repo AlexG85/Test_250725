@@ -15,9 +15,14 @@ Test_Examen is a .NET 8 web API solution designed as a practical exam project. I
 - **JWT Authentication**: Secure endpoints using JSON Web Tokens.
 - **Custom Middleware**: Handles token validation and blacklisting.
 - **User Management**: Endpoints for login, registration, token refresh, and user session reporting.
+- **Role Management**: CRUD endpoints for application roles.
+- **Employee Management**: CRUD endpoints for employee records.
 - **Swagger/OpenAPI**: Interactive API documentation.
 - **Entity Framework Core**: SQL Server database integration with automatic migrations.
 - **Authorization**: Role-based and policy-based access control.
+- **Unit Testing**: xUnit and Moq for controller and service tests.
+- **In-memory Caching**: Used for token blacklisting and performance.
+- **Hosted Services**: Background service for invalid token management.
 
 ## Getting Started
 
@@ -54,11 +59,29 @@ Run unit tests with: dotnet test
 
 ## API Endpoints
 
+### Authentication & Users
+
 - `POST /Auth/Login` — Authenticate user and receive JWT.
 - `POST /Auth/Signin` — Register a new user.
 - `POST /Auth/Refresh` — Refresh JWT token.
 - `GET /Auth/GetAuthenticated` — Get current authenticated user info.
 - `GET /ReportUser/sessionlogins?userId={id}&size={n}` — Get recent login sessions for a user.
+
+### Roles
+
+- `GET /Role/all` — Get all roles.
+- `GET /Role/{id}` — Get role by ID.
+- `POST /Role` — Create a new role.
+- `PUT /Role/{id}` — Update a role.
+- `DELETE /Role/{id}` — Delete a role.
+
+### Employees
+
+- `GET /Employee/all` — Get all employees.
+- `GET /Employee/{id}` — Get employee by ID.
+- `POST /Employee` — Create a new employee.
+- `PUT /Employee/{id}` — Update an employee.
+- `DELETE /Employee/{id}` — Delete an employee.
 
 ## Technologies Used
 
@@ -67,6 +90,8 @@ Run unit tests with: dotnet test
 - JWT Bearer Authentication
 - xUnit & Moq (for testing)
 - Swagger (Swashbuckle)
+- In-memory caching
+- Hosted background services
 
 ## License
 
